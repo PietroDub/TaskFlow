@@ -1,8 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Início";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Projeto da UNISAGRADO Grupo 12 - TaskFlow</p>
+<div class="mb-5">
+    <h1 class="tf-page-title display-6 mb-3">Bem-vindo ao TaskFlow</h1>
+    <p class="tf-page-lead lead mb-0">
+        Organize o trabalho da sua equipe em um só lugar: cadastre pessoas, distribua responsabilidades e acompanhe cada tarefa do planejamento até a conclusão.
+    </p>
 </div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="tf-card-soft p-4 h-100">
+            <h2 class="h6 text-primary mb-2">Equipe</h2>
+            <p class="text-secondary small mb-3">Registre nome, e-mail e função de cada integrante para atribuir tarefas com clareza.</p>
+            <a class="btn btn-primary btn-sm" asp-controller="Usuarios" asp-action="Index">Abrir usuários</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="tf-card-soft p-4 h-100">
+            <h2 class="h6 text-primary mb-2">Tarefas</h2>
+            <p class="text-secondary small mb-3">Crie tarefas com prioridade, prazo, status e responsável. Use filtros para encontrar o que importa.</p>
+            <a class="btn btn-outline-primary btn-sm" asp-controller="Tarefas" asp-action="Index">Abrir tarefas</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="tf-card-soft p-4 h-100">
+            <h2 class="h6 text-primary mb-2">Indicadores</h2>
+            <p class="text-secondary small mb-3">Veja totais por status em um painel simples para acompanhar o andamento geral.</p>
+            <a class="btn btn-outline-secondary btn-sm" asp-controller="Home" asp-action="Relatorio">Ver relatório</a>
+        </div>
+    </div>
+</div>
+
+<p class="text-secondary small border-start border-primary border-3 ps-3 mb-0">
+    Dica: cadastre primeiro os <strong>usuários</strong> e depois as <strong>tarefas</strong>, escolhendo o responsável em cada registro.
+</p>

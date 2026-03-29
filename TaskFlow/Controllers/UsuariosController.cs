@@ -1,157 +1,175 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using TaskFlow.Data;
+using TaskFlow.Helpers;
 using TaskFlow.Models;
+using TaskFlow.Services;
 
 namespace TaskFlow.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly AppDbContext _context;
+        private const string MsgErroCarregar = "Não foi possível carregar os dados.";
+        private const string MsgErroSalvar = "Não foi possível salvar os dados. Verifique a conexão com o banco.";
 
-        public UsuariosController(AppDbContext context)
+        private readonly IUsuarioService _usuarioService;
+
+        public UsuariosController(IUsuarioService usuarioService)
         {
-            _context = context;
+            _usuarioService = usuarioService;
         }
 
-        // GET: Usuarios
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            return View(await _context.Usuarios.ToListAsync());
+            try
+            {
+                var list = await _usuarioService.ListarAsync(cancellationToken);
+                return View(list);
+            }
+            catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+            {
+                ViewBag.ErroCarregamento = MsgErroCarregar;
+                return View(Array.Empty<Usuario>());
+            }
         }
 
-        // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
+            try
             {
-                return NotFound();
-            }
+                var usuario = await _usuarioService.ObterPorIdAsync(id.Value, cancellationToken);
+                if (usuario == null)
+                    return NotFound();
 
-            return View(usuario);
+                return View(usuario);
+            }
+            catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+            {
+                ViewBag.ErroCarregamento = MsgErroCarregar;
+                return View(new Usuario());
+            }
         }
 
-        // GET: Usuarios/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,Funcao")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("Id,Nome,Email,Funcao")] Usuario usuario, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _usuarioService.CriarAsync(usuario, cancellationToken);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+                {
+                    ViewBag.ErroOperacao = MsgErroSalvar;
+                    return View(usuario);
+                }
             }
             return View(usuario);
         }
 
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
+            try
             {
-                return NotFound();
+                var usuario = await _usuarioService.ObterPorIdAsync(id.Value, cancellationToken);
+                if (usuario == null)
+                    return NotFound();
+
+                return View(usuario);
             }
-            return View(usuario);
+            catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+            {
+                ViewBag.ErroCarregamento = MsgErroCarregar;
+                return View(new Usuario { Id = id.Value });
+            }
         }
 
-        // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,Funcao")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,Funcao")] Usuario usuario, CancellationToken cancellationToken)
         {
             if (id != usuario.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    await _usuarioService.AtualizarAsync(usuario, cancellationToken);
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.Id))
+                    try
                     {
-                        return NotFound();
+                        if (await _usuarioService.ObterPorIdAsync(usuario.Id, cancellationToken) == null)
+                            return NotFound();
                     }
-                    else
+                    catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
                     {
-                        throw;
+                        ViewBag.ErroOperacao = MsgErroSalvar;
+                    return View(usuario);
                     }
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+                {
+                    ViewBag.ErroOperacao = MsgErroSalvar;
+                    return View(usuario);
+                }
             }
             return View(usuario);
         }
 
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
+            try
             {
-                return NotFound();
-            }
+                var usuario = await _usuarioService.ObterPorIdAsync(id.Value, cancellationToken);
+                if (usuario == null)
+                    return NotFound();
 
-            return View(usuario);
+                return View(usuario);
+            }
+            catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+            {
+                ViewBag.ErroCarregamento = MsgErroCarregar;
+                return View(new Usuario());
+            }
         }
 
-        // POST: Usuarios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken cancellationToken)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
+            try
             {
-                _context.Usuarios.Remove(usuario);
+                await _usuarioService.ExcluirAsync(id, cancellationToken);
+                return RedirectToAction(nameof(Index));
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuarios.Any(e => e.Id == id);
+            catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+            {
+                TempData["ErroOperacao"] = MsgErroSalvar;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }
+
+

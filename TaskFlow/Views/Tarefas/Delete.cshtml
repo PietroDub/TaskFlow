@@ -1,51 +1,37 @@
-﻿@model TaskFlow.Models.Tarefa
+@model TaskFlow.Models.Tarefa
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir tarefa";
 }
 
-<h1>Delete</h1>
+<h1 class="tf-page-title h3 mb-2 text-danger">Excluir tarefa</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Tarefa</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Titulo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Titulo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prioridade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prioridade)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prazo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prazo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Usuario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Usuario.Id)
-        </dd>
-    </dl>
-    
+@if (ViewBag.ErroCarregamento != null)
+{
+    <a class="btn btn-outline-secondary mt-2" asp-action="Index">Voltar à lista</a>
+}
+else
+{
+    <p class="tf-page-lead small mb-4">Esta ação remove o registro do banco de dados e não pode ser desfeita.</p>
+
+    <div class="tf-card-soft border-danger border-opacity-25 p-4 mb-4" style="max-width: 640px;">
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Titulo)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Titulo)</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Prioridade)</dt>
+            <dd class="col-sm-9">@Model.Prioridade.GetDisplayName()</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9">@Model.Status.GetDisplayName()</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Prazo)</dt>
+            <dd class="col-sm-9">@Model.Prazo.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Usuario)</dt>
+            <dd class="col-sm-9">@(Model.Usuario?.Nome ?? "—")</dd>
+        </dl>
+    </div>
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <button type="submit" class="btn btn-danger">Excluir definitivamente</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
     </form>
-</div>
+}

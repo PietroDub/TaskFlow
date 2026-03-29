@@ -1,48 +1,37 @@
-﻿@model TaskFlow.Models.Tarefa
+@model TaskFlow.Models.Tarefa
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes da tarefa";
 }
 
-<h1>Details</h1>
+<h1 class="tf-page-title h3 mb-2">Detalhes da tarefa</h1>
+<p class="tf-page-lead small mb-4">Resumo da atividade e do responsável.</p>
 
-<div>
-    <h4>Tarefa</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Titulo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Titulo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prioridade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prioridade)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prazo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prazo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Usuario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Usuario.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+@if (ViewBag.ErroCarregamento != null)
+{
+    <a class="btn btn-outline-secondary" asp-action="Index">Voltar à lista</a>
+}
+else
+{
+    <div class="tf-card-soft p-4 mb-3" style="max-width: 640px;">
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Titulo)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Titulo)</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Descricao)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Descricao)</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Prioridade)</dt>
+            <dd class="col-sm-9"><span class="badge text-bg-secondary">@Model.Prioridade.GetDisplayName()</span></dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9"><span class="badge text-bg-secondary">@Model.Status.GetDisplayName()</span></dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Prazo)</dt>
+            <dd class="col-sm-9">@Model.Prazo.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Usuario)</dt>
+            <dd class="col-sm-9">@(Model.Usuario?.Nome ?? "—")</dd>
+        </dl>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+        <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Voltar</a>
+    </div>
+}

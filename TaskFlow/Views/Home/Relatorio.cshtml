@@ -1,0 +1,42 @@
+@model RelatorioTarefasViewModel
+@{
+    ViewData["Title"] = "Relatório";
+}
+
+<div class="mb-4">
+    <h1 class="tf-page-title h2 mb-2">Relatório de tarefas</h1>
+    <p class="tf-page-lead text-secondary mb-0">
+        Visão consolidada do volume de tarefas e da distribuição por status (a fazer, em andamento e concluídas).
+    </p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="tf-card-soft p-3 h-100">
+            <p class="small text-secondary text-uppercase mb-1">Total</p>
+            <p class="h3 mb-0 text-primary">@Model.TotalTarefas</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="tf-card-soft p-3 h-100">
+            <p class="small text-secondary text-uppercase mb-1">Concluídas</p>
+            <p class="h3 mb-0 text-success">@Model.Concluidas</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="tf-card-soft p-3 h-100">
+            <p class="small text-secondary text-uppercase mb-1">Em andamento</p>
+            <p class="h3 mb-0 text-warning">@Model.EmAndamento</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="tf-card-soft p-3 h-100">
+            <p class="small text-secondary text-uppercase mb-1">A fazer</p>
+            <p class="h3 mb-0 text-secondary">@Model.AFazer</p>
+        </div>
+    </div>
+</div>
+
+<p class="text-secondary small mb-0">
+    Os números consideram todas as tarefas persistidas no banco de dados. Use a tela de <a asp-controller="Tarefas" asp-action="Index">tarefas</a> para filtrar por responsável, status ou prioridade.
+</p>

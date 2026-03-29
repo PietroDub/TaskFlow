@@ -1,36 +1,31 @@
-﻿@model TaskFlow.Models.Usuario
+@model TaskFlow.Models.Usuario
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do usuário";
 }
 
-<h1>Details</h1>
+<h1 class="tf-page-title h3 mb-2">Detalhes do usuário</h1>
+<p class="tf-page-lead small mb-4">Informações cadastrais utilizadas nas atribuições de tarefas.</p>
 
-<div>
-    <h4>Usuario</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Funcao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Funcao)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+@if (ViewBag.ErroCarregamento != null)
+{
+    <a class="btn btn-outline-secondary" asp-action="Index">Voltar à lista</a>
+}
+else
+{
+    <div class="tf-card-soft p-4 mb-3" style="max-width: 520px;">
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Nome)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Nome)</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Email)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+            <dt class="col-sm-3 text-secondary small">@Html.DisplayNameFor(model => model.Funcao)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Funcao)</dd>
+        </dl>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+        <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Voltar</a>
+    </div>
+}

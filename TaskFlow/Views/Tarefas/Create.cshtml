@@ -1,50 +1,54 @@
-﻿@model TaskFlow.Models.Tarefa
+@model TaskFlow.Models.Tarefa
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nova tarefa";
 }
 
-<h1>Create</h1>
+<h1 class="tf-page-title h3 mb-2">Nova tarefa</h1>
+<p class="tf-page-lead small mb-4">Defina o que será feito, quando e quem é o responsável. É necessário haver pelo menos um usuário cadastrado.</p>
 
-<h4>Tarefa</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-lg-7">
+        <form asp-action="Create" class="tf-card-soft p-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label fw-semibold"></label>
+                <input asp-for="Titulo" class="form-control" placeholder="Ex.: Implementar tela de login" />
                 <span asp-validation-for="Titulo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <input asp-for="Descricao" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label fw-semibold"></label>
+                <textarea asp-for="Descricao" class="form-control" rows="3" placeholder="Detalhes ou critérios de aceite"></textarea>
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Prioridade" class="control-label"></label>
-                <input asp-for="Prioridade" class="form-control" />
-                <span asp-validation-for="Prioridade" class="text-danger"></span>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Prioridade" class="form-label fw-semibold"></label>
+                    <select asp-for="Prioridade" class="form-select" asp-items="Html.GetEnumSelectList<TaskFlow.Models.PrioridadeTarefa>()"></select>
+                    <span asp-validation-for="Prioridade" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Status" class="form-label fw-semibold"></label>
+                    <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<TaskFlow.Models.StatusTarefa>()"></select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Prazo" class="control-label"></label>
-                <input asp-for="Prazo" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="Prazo" class="form-label fw-semibold"></label>
+                <input asp-for="Prazo" class="form-control" type="date" />
                 <span asp-validation-for="Prazo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioId"></select>
+            <div class="mb-4">
+                <label asp-for="UsuarioId" class="form-label fw-semibold"></label>
+                <select asp-for="UsuarioId" class="form-select" asp-items="ViewBag.UsuarioId"></select>
+                <span asp-validation-for="UsuarioId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

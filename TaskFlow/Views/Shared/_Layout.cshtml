@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,43 +9,57 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TaskFlow.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TaskFlow</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="Index">Usuario</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Tarefas" asp-action="Index">Tarefa</a>
-                        </li>
-                    </ul>
+<body class="tf-app">
+    <div class="container-fluid px-0">
+        <div class="row g-0 min-vh-100">
+            <aside class="col-12 col-md-3 col-lg-2 tf-sidebar border-end shadow-sm">
+                <div class="d-flex flex-column p-3 pt-4 sticky-top">
+                    <a class="tf-brand text-decoration-none mb-1" asp-controller="Home" asp-action="Index">TaskFlow</a>
+                    <p class="small text-white-50 mb-4 px-1 lh-sm">Gestão de tarefas em equipe</p>
+                    <nav class="nav flex-column gap-1" role="navigation">
+                        <a class="nav-link tf-nav-link rounded px-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">Início</a>
+                        <a class="nav-link tf-nav-link rounded px-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Usuarios" ? "active" : "")" asp-controller="Usuarios" asp-action="Index">Usuários</a>
+                        <a class="nav-link tf-nav-link rounded px-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Tarefas" ? "active" : "")" asp-controller="Tarefas" asp-action="Index">Tarefas</a>
+                        <a class="nav-link tf-nav-link rounded px-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Relatorio" ? "active" : "")" asp-controller="Home" asp-action="Relatorio">Relatório</a>
+                    </nav>
+                    <hr class="border-secondary my-4 opacity-25" />
+                    <a class="nav-link tf-nav-link small px-3 text-white-50" asp-controller="Home" asp-action="Privacy">Privacidade</a>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            </aside>
+            <main class="col-12 col-md-9 col-lg-10 tf-main">
+                <div class="tf-content py-4 px-3 px-lg-5">
+                    @if (TempData["ErroOperacao"] != null)
+                    {
+                        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-start gap-2 mb-4" role="alert">
+                            <span class="fw-semibold">Erro:</span>
+                            <span>@TempData["ErroOperacao"]</span>
+                        </div>
+                    }
+                    @if (ViewBag.ErroOperacao != null)
+                    {
+                        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-start gap-2 mb-4" role="alert">
+                            <span class="fw-semibold">Erro:</span>
+                            <span>@ViewBag.ErroOperacao</span>
+                        </div>
+                    }
+                    @if (ViewBag.ErroCarregamento != null)
+                    {
+                        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-start gap-2 mb-4" role="alert">
+                            <span class="fw-semibold">Aviso:</span>
+                            <span>@ViewBag.ErroCarregamento</span>
+                        </div>
+                    }
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - TaskFlow - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="tf-footer border-top py-4 mt-auto">
+        <div class="container-fluid px-3 px-lg-5 text-center text-md-start small text-secondary">
+            <span class="me-2">&copy; 2026 TaskFlow</span>
+            <span class="d-none d-md-inline">·</span>
+            <span> Projeto acadêmico — controle de usuários, tarefas e status.</span>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -1,59 +1,80 @@
-﻿@model IEnumerable<TaskFlow.Models.Tarefa>
-
+@model IEnumerable<TaskFlow.Models.Tarefa>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tarefas";
 }
 
-<h1>Index</h1>
+<div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="tf-page-title h2 mb-2">Tarefas</h1>
+        <p class="tf-page-lead small mb-0">Atividades da equipe com prioridade, prazo, status e responsável.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Nova tarefa</a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Titulo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descricao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prioridade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prazo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Usuario)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+<form method="get" asp-action="Index" class="tf-card-soft p-4 mb-4">
+    <p class="small text-secondary mb-3">Filtre por responsável (ex.: tarefas do João), por status (ex.: concluídas) ou por prioridade (ex.: alta).</p>
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Responsável</label>
+            <select name="usuarioId" class="form-select form-select-sm" asp-items="ViewBag.UsuariosFiltro"></select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Status</label>
+            <select name="status" class="form-select form-select-sm" asp-items="ViewBag.StatusFiltro"></select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Prioridade</label>
+            <select name="prioridade" class="form-select form-select-sm" asp-items="ViewBag.PrioridadeFiltro"></select>
+        </div>
+        <div class="col-12 d-flex flex-wrap gap-2 pt-1">
+            <button type="submit" class="btn btn-primary btn-sm">Aplicar filtros</button>
+            <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Limpar</a>
+        </div>
+    </div>
+</form>
+
+<div class="tf-table-wrap">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Titulo)</th>
+                    <th>@Html.DisplayNameFor(model => model.Prioridade)</th>
+                    <th>@Html.DisplayNameFor(model => model.Status)</th>
+                    <th>@Html.DisplayNameFor(model => model.Prazo)</th>
+                    <th>@Html.DisplayNameFor(model => model.Usuario)</th>
+                    <th class="text-end"></th>
+                </tr>
+            </thead>
+            <tbody>
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prioridade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prazo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Titulo)</td>
+                    <td>
+                        <span class="badge @(item.Prioridade == TaskFlow.Models.PrioridadeTarefa.Alta ? "text-bg-danger" : item.Prioridade == TaskFlow.Models.PrioridadeTarefa.Media ? "text-bg-warning text-dark" : "text-bg-secondary")">
+                            @item.Prioridade.GetDisplayName()
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge @(item.Status == TaskFlow.Models.StatusTarefa.Concluido ? "text-bg-success" : item.Status == TaskFlow.Models.StatusTarefa.EmAndamento ? "text-bg-info text-dark" : "text-bg-secondary")">
+                            @item.Status.GetDisplayName()
+                        </span>
+                    </td>
+                    <td>@item.Prazo.ToString("dd/MM/yyyy")</td>
+                    <td>@(item.Usuario?.Nome ?? "—")</td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        <a class="btn btn-outline-secondary btn-sm" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                        <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                    </td>
+                </tr>
 }
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any() && ViewBag.ErroCarregamento == null)
+{
+    <p class="text-secondary mt-4 mb-0">Nenhuma tarefa corresponde aos filtros ou ainda não há tarefas cadastradas.</p>
+}
