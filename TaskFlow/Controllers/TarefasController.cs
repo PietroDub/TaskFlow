@@ -86,6 +86,8 @@ namespace TaskFlow.Controllers
             [Bind("Id,Titulo,Descricao,Prioridade,Prazo,Status,UsuarioId")] Tarefa tarefa,
             CancellationToken cancellationToken)
         {
+            await ValidarUsuarioResponsavelAsync(tarefa, cancellationToken);
+
             if (ModelState.IsValid)
             {
                 try
@@ -136,11 +138,16 @@ namespace TaskFlow.Controllers
             if (id != tarefa.Id)
                 return NotFound();
 
+            await ValidarUsuarioResponsavelAsync(tarefa, cancellationToken);
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _tarefaService.AtualizarAsync(tarefa, cancellationToken);
+                    var atualizou = await _tarefaService.AtualizarAsync(tarefa, cancellationToken);
+                    if (!atualizou)
+                        return NotFound();
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
@@ -195,7 +202,10 @@ namespace TaskFlow.Controllers
         {
             try
             {
-                await _tarefaService.ExcluirAsync(id, cancellationToken);
+                var excluiu = await _tarefaService.ExcluirAsync(id, cancellationToken);
+                if (!excluiu)
+                    return NotFound();
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
@@ -216,6 +226,26 @@ namespace TaskFlow.Controllers
             {
                 ViewData["UsuarioId"] = new SelectList(Array.Empty<Usuario>(), "Id", "Nome", usuarioIdSelecionado);
                 ViewBag.ErroCarregamento = MsgErroCarregar;
+            }
+        }
+
+        private async Task ValidarUsuarioResponsavelAsync(Tarefa tarefa, CancellationToken cancellationToken)
+        {
+            if (tarefa.UsuarioId <= 0)
+            {
+                ModelState.AddModelError(nameof(Tarefa.UsuarioId), "Selecione um responsável válido.");
+                return;
+            }
+
+            try
+            {
+                var usuarioExiste = await _usuarioService.ExisteAsync(tarefa.UsuarioId, cancellationToken);
+                if (!usuarioExiste)
+                    ModelState.AddModelError(nameof(Tarefa.UsuarioId), "O responsável selecionado não existe.");
+            }
+            catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
+            {
+                ModelState.AddModelError(string.Empty, MsgErroCarregar);
             }
         }
 

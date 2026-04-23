@@ -13,7 +13,7 @@ namespace TaskFlow.Services
 
         Task<Tarefa?> ObterPorIdAsync(int id, CancellationToken cancellationToken = default);
         Task CriarAsync(Tarefa tarefa, CancellationToken cancellationToken = default);
-        Task AtualizarAsync(Tarefa tarefa, CancellationToken cancellationToken = default);
+        Task<bool> AtualizarAsync(Tarefa tarefa, CancellationToken cancellationToken = default);
         Task<bool> ExcluirAsync(int id, CancellationToken cancellationToken = default);
 
         Task<int> ContarConcluidasAsync(CancellationToken cancellationToken = default);

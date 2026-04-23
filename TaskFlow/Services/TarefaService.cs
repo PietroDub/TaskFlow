@@ -52,10 +52,22 @@ namespace TaskFlow.Services
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task AtualizarAsync(Tarefa tarefa, CancellationToken cancellationToken = default)
+        public async Task<bool> AtualizarAsync(Tarefa tarefa, CancellationToken cancellationToken = default)
         {
-            _context.Tarefas.Update(tarefa);
+            var tarefaExistente = await _context.Tarefas
+                .FirstOrDefaultAsync(t => t.Id == tarefa.Id, cancellationToken);
+            if (tarefaExistente is null)
+                return false;
+
+            tarefaExistente.Titulo = tarefa.Titulo;
+            tarefaExistente.Descricao = tarefa.Descricao;
+            tarefaExistente.Prioridade = tarefa.Prioridade;
+            tarefaExistente.Status = tarefa.Status;
+            tarefaExistente.Prazo = tarefa.Prazo;
+            tarefaExistente.UsuarioId = tarefa.UsuarioId;
+
             await _context.SaveChangesAsync(cancellationToken);
+            return true;
         }
 
         public async Task<bool> ExcluirAsync(int id, CancellationToken cancellationToken = default)

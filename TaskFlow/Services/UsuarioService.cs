@@ -32,10 +32,19 @@ namespace TaskFlow.Services
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task AtualizarAsync(Usuario usuario, CancellationToken cancellationToken = default)
+        public async Task<bool> AtualizarAsync(Usuario usuario, CancellationToken cancellationToken = default)
         {
-            _context.Usuarios.Update(usuario);
+            var usuarioExistente = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Id == usuario.Id, cancellationToken);
+            if (usuarioExistente is null)
+                return false;
+
+            usuarioExistente.Nome = usuario.Nome;
+            usuarioExistente.Email = usuario.Email;
+            usuarioExistente.Funcao = usuario.Funcao;
+
             await _context.SaveChangesAsync(cancellationToken);
+            return true;
         }
 
         public async Task<bool> ExcluirAsync(int id, CancellationToken cancellationToken = default)
@@ -47,6 +56,11 @@ namespace TaskFlow.Services
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync(cancellationToken);
             return true;
+        }
+
+        public async Task<bool> ExisteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Usuarios.AnyAsync(u => u.Id == id, cancellationToken);
         }
     }
 }

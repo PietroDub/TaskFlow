@@ -108,7 +108,10 @@ namespace TaskFlow.Controllers
             {
                 try
                 {
-                    await _usuarioService.AtualizarAsync(usuario, cancellationToken);
+                    var atualizou = await _usuarioService.AtualizarAsync(usuario, cancellationToken);
+                    if (!atualizou)
+                        return NotFound();
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
@@ -160,7 +163,10 @@ namespace TaskFlow.Controllers
         {
             try
             {
-                await _usuarioService.ExcluirAsync(id, cancellationToken);
+                var excluiu = await _usuarioService.ExcluirAsync(id, cancellationToken);
+                if (!excluiu)
+                    return NotFound();
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex) when (DatabaseAccessHelper.IsLikelyDatabaseAccessFailure(ex))
